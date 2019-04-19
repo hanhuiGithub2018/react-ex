@@ -6,49 +6,71 @@ import ListItem from './ListItem'
 import "./static/css/common_px.css"
 import "antd/dist/antd.css"
 
-const Search = Input.Search;
+// const Search = Input.Search;
 
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = store.getState();
-        console.log(store.getState());
+        // console.log(store);
         this.changeInputValue = this.changeInputValue.bind(this);
         this.addList = this.addList.bind(this);
         this.deleteItem = this.deleteItem.bind(this);
+        this.changeState = this.changeState.bind(this);
+        store.subscribe(this.changeState);
+    }
+
+    changeState(){
+        // console.log(this.state,store.getState());
+        this.setState(store.getState());
     }
 
     changeInputValue(e){
-        const value = e.target.value ;
-        this.setState(()=>{
-            return {
-                inputValue: value
-            }
-        })
+        // const value = e.target.value ;
+        // this.setState(()=>{
+        //     return {
+        //         inputValue: value
+        //     }
+        // })
+        let action = {
+            type:"change_input_value",
+            value: e.target.value
+        };
+        store.dispatch(action)
     }
 
     addList(){
-        this.setState((preState)=>{
-            const newList = [...preState.list,preState.inputValue];
-            return {
-                inputValue: '',
-                list: newList
-            }
-        })
+        // this.setState((preState)=>{
+        //     const newList = [...preState.list,preState.inputValue];
+        //     return {
+        //         inputValue: '',
+        //         list: newList
+        //     }
+        // })
+        let action = {
+            type: "add_list_item",
+            value: this.state.inputValue
+        };
+        store.dispatch(action)
     }
 
     deleteItem(ind){
-        this.setState((preState)=>{
-            const newList = [...preState.list,preState.inputValue];
-            newList.splice(ind,1);
-            return {
-                list: newList
-            }
-        })
+        // this.setState((preState)=>{
+        //     const newList = [...preState.list,preState.inputValue];
+        //     newList.splice(ind,1);
+        //     return {
+        //         list: newList
+        //     }
+        // })
+        let action = {
+            type: "delete_list_item",
+            value: ind
+        };
+        store.dispatch(action)
     }
 
     componentDidMount(){
-        axios.get('./mock')
+        axios.get('./mock/name.json')
             .then(()=>{
                 console.log('获取文件成功！')
             })
@@ -64,6 +86,7 @@ class App extends Component {
                     placeholder="请输入新增项目"
                     style={{width:400}}
                     className={"mg-10"}
+                    value={this.state.inputValue}
                     onChange={this.changeInputValue}
                 />
                 <Button
